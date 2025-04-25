@@ -40,6 +40,10 @@ fun start(appModule: DI.Module) {
 
         routing {
             post("/{business}/{function}") {
+                for ((key, binding) in closestDI().container.tree.bindings) {
+                    println("Tipo registrado: ${key.type.simpleDispString()} con tag: ${key.tag}")
+                }
+
                 val businessName = call.parameters["business"]
                 val functionName = call.parameters["function"]
 

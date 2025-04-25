@@ -9,8 +9,12 @@ import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
 import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
 import org.slf4j.Logger
 import java.lang.NullPointerException
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.iterator
 import kotlin.getValue
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -31,6 +35,10 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
 
             val di = DI {
                 import(appModule)
+            }
+
+            for ((key, binding) in di.container.tree.bindings) {
+                println("Tipo registrado: ${key.type.simpleDispString()} con tag: ${key.tag}")
             }
 
             val logger: Logger by di.instance()
@@ -67,7 +75,7 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
                             logger.info("Business not avaiable with name $businessName")
                             functionResponse = ExceptionResponse("Business not avaiable with name $businessName")
                         } else {
-                            if (functionName == null) {
+                            if (functionName == null) {56
                                 logger.info("No function defined on headers")
                                 functionResponse = RequestValidationException("No function defined on path")
                             } else {
