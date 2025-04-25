@@ -1,5 +1,6 @@
 package ar.com.intrale
 
+import aws.smithy.kotlin.runtime.util.type
 import com.google.gson.Gson
 import io.github.flaxoos.ktor.server.plugins.ratelimiter.RateLimiting
 import io.github.flaxoos.ktor.server.plugins.ratelimiter.implementations.TokenBucket
@@ -11,9 +12,11 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.kodein.di.DI
+import org.kodein.di.direct
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 import org.kodein.di.ktor.di
+import org.kodein.type.jvmType
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -41,7 +44,10 @@ fun start(appModule: DI.Module) {
         routing {
             post("/{business}/{function}") {
                 for ((key, binding) in closestDI().container.tree.bindings) {
-                    println("Tipo registrado: ${key.type.simpleDispString()} con tag: ${key.tag}")
+                    val tipo = key.type.jvmType.typeName  // nombre completo del tipo
+                    val tipoBinding = binding::class.qualifiedName // tipo de binding (singleton, provider, etc.)
+
+                    println("Tipo registrado: $tipo con tag: ${key.tag} -> binding: $tipoBinding")
                 }
 
                 val businessName = call.parameters["business"]
@@ -61,6 +67,7 @@ fun start(appModule: DI.Module) {
                             functionResponse = RequestValidationException("No function defined on path")
                         } else {
                             try {
+                                println("Injecting Function $functionName")
                                 val function by closestDI().instance<Function>(tag = functionName)
                                 val headers: Map<String, String> = call.request.headers.entries().associate {
                                     it.key to it.value.joinToString(",")

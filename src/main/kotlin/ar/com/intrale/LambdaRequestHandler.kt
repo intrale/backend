@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import org.kodein.di.DI
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
+import org.kodein.type.jvmType
 import org.slf4j.Logger
 import java.lang.NullPointerException
 import kotlin.collections.component1
@@ -38,7 +39,10 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
             }
 
             for ((key, binding) in di.container.tree.bindings) {
-                println("Tipo registrado: ${key.type.simpleDispString()} con tag: ${key.tag}")
+                val tipo = key.type.jvmType.typeName  // nombre completo del tipo
+                val tipoBinding = binding::class.qualifiedName // tipo de binding (singleton, provider, etc.)
+
+                println("Tipo registrado: $tipo con tag: ${key.tag} -> binding: $tipoBinding")
             }
 
             val logger: Logger by di.instance()
