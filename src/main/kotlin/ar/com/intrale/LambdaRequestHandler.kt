@@ -39,10 +39,11 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
             }
 
             for ((key, binding) in di.container.tree.bindings) {
-                val tipo = key.type.jvmType.typeName  // nombre completo del tipo
-                val tipoBinding = binding::class.qualifiedName // tipo de binding (singleton, provider, etc.)
+                val tipo = key.type.jvmType.typeName               // Nombre completo del tipo vinculado
+                val tag = key.tag?.toString() ?: "sin tag"
+                val tipoBinding = binding::class.qualifiedName     // Tipo de binding (singleton, provider, etc.)
 
-                println("Tipo registrado: $tipo con tag: ${key.tag} -> binding: $tipoBinding")
+                println("Tipo registrado: $tipo con tag: $tag -> binding: $tipoBinding")
             }
 
             val logger: Logger by di.instance()
