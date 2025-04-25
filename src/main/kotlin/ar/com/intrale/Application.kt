@@ -36,19 +36,16 @@ fun start(appModule: DI.Module) {
             }
         }
 
-        di {
+        /*di {
             /* bindings */
             import(appModule)
-        }
+        }*/
 
         routing {
             post("/{business}/{function}") {
-                for ((key, binding) in closestDI().container.tree.bindings) {
-                    val tipo = key.type.jvmType.typeName               // Nombre completo del tipo vinculado
-                    val tag = key.tag?.toString() ?: "sin tag"
-                    val tipoBinding = binding::class.qualifiedName     // Tipo de binding (singleton, provider, etc.)
 
-                    println("Tipo registrado: $tipo con tag: $tag -> binding: $tipoBinding")
+                val di = DI {
+                    import(appModule)
                 }
 
                 val businessName = call.parameters["business"]
@@ -59,7 +56,7 @@ fun start(appModule: DI.Module) {
                 if (businessName == null) {
                     functionResponse = RequestValidationException("No business defined on path")
                 } else {
-                    val config by closestDI().instance<Config>(tag = "config")
+                    val config = di.direct.instance<Config>(tag = "config")
                     System.out.println("config.businesses:" + config.businesses)
                     if (!config.businesses.contains(businessName)){
                         functionResponse = ExceptionResponse("Business not avaiable with name $businessName")
@@ -69,7 +66,7 @@ fun start(appModule: DI.Module) {
                         } else {
                             try {
                                 println("Injecting Function $functionName")
-                                val function by closestDI().instance<Function>(tag = functionName)
+                                val function = di.direct.instance<Function>(tag = functionName)
                                 val headers: Map<String, String> = call.request.headers.entries().associate {
                                     it.key to it.value.joinToString(",")
                                 }
