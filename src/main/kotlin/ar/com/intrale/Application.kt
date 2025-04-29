@@ -66,6 +66,8 @@ fun start(appModule: DI.Module) {
                             functionResponse = RequestValidationException("No function defined on path")
                         } else {
                             try {
+                                val allFunctions = di.direct.allInstances<Function>()
+                                println(">>> Registered functions count: ${allFunctions.size}")
                                 println("Injecting Function $functionName.")
                                 val function = di.direct.instance<Function>(tag = functionName)
                                 val headers: Map<String, String> = call.request.headers.entries().associate {
