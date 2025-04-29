@@ -12,6 +12,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.kodein.di.DI
+import org.kodein.di.allInstances
 import org.kodein.di.direct
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
@@ -65,7 +66,7 @@ fun start(appModule: DI.Module) {
                             functionResponse = RequestValidationException("No function defined on path")
                         } else {
                             try {
-                                println("Injecting Function $functionName")
+                                println("Injecting Function $functionName.")
                                 val function = di.direct.instance<Function>(tag = functionName)
                                 val headers: Map<String, String> = call.request.headers.entries().associate {
                                     it.key to it.value.joinToString(",")
