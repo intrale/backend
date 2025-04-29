@@ -31,7 +31,7 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
 
     // The request limit most be assigned on Api Gateway
     @OptIn(ExperimentalEncodingApi::class)
-    fun handle(appModule: DI.Module, requestEvent: APIGatewayProxyRequestEvent?, context: Context?): APIGatewayProxyResponseEvent  = APIGatewayProxyResponseEvent().apply {
+    fun handle(appModule: DI.Module, requestEvent: APIGatewayProxyRequestEvent?, context: Context?): APIGatewayProxyResponseEvent  /*= APIGatewayProxyResponseEvent().apply */{
         try {
 
             val di = DI {
@@ -57,9 +57,10 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
                     map["Access-Control-Allow-Methods"] = "GET, OPTIONS, HEAD, PUT, POST"
                     map["Access-Control-Allow-Headers"] =
                         "Content-Type,Accept,Referer,User-Agent,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Allow-Origin,Access-Control-Allow-Headers,function,idToken,businessName,filename"
-                    headers = map
-
-                    statusCode = 200
+                    return APIGatewayProxyResponseEvent().apply {
+                        headers = map
+                        statusCode = 200
+                    }
                 }
 
                 if (httpMehtod == "POST") {
@@ -87,7 +88,7 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
                                 try {
                                     logger.info("Injecting Function $functionName")
                                     val function by di.instance<Function>(tag = functionName)
-                                    runBlocking {
+                                    return runBlocking {
                                         var requestBody:String = ""
                                         try {
                                             requestBody = String(Base64.Default.decode(requestEvent.body));
@@ -104,29 +105,45 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
                                             }
                                         }
 
-                                        body = Gson().toJson(functionResponse)
-                                        logger.info("Returning body is $body")
-                                        statusCode = functionResponse.statusCode?.value
+                                        return@runBlocking APIGatewayProxyResponseEvent().apply {
+                                            body = Gson().toJson(functionResponse)
+                                            logger.info("Returning body is $body")
+                                            statusCode = functionResponse.statusCode?.value
+                                        }
                                     }
                                 } catch (e: DI.NotFoundException) {
                                     logger.info("No function with name $functionName found")
                                     functionResponse = ExceptionResponse("No function with name $functionName found")
+                                    return APIGatewayProxyResponseEvent().apply {
+                                        body = Gson().toJson(functionResponse)
+                                        logger.info("Returning body is $body")
+                                        statusCode = functionResponse.statusCode?.value
+                                    }
                                 }
                             }
                         }
                     }
 
-                    body = Gson().toJson(functionResponse)
-                    logger.info("Finally returning body is $body")
-                    statusCode = functionResponse.statusCode?.value
+                    return APIGatewayProxyResponseEvent().apply {
+                        body = Gson().toJson(functionResponse)
+                        logger.info("Finally returning body is $body")
+                        statusCode = functionResponse.statusCode?.value
+                    }
 
                 }
 
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            statusCode = 500
-            body = "Internal Server Error"
+            return APIGatewayProxyResponseEvent().apply {
+                statusCode = 500
+                body = "Internal Server Error"
+            }
         }
+        return APIGatewayProxyResponseEvent().apply {
+            statusCode = 500
+            body = "Unexpected Error"
+        }
+
     }
 }

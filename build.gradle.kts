@@ -79,7 +79,7 @@ publishing {
             from(components["java"])
             groupId = "ar.com.intrale"
             artifactId = "backend"
-            version = "0.0.5"
+            version = "0.0.6"
         }
     }
     repositories {
