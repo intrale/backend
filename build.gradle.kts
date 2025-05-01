@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "ar.com.intrale"
-version = "0.0.8"
+version = "0.0.9"
 
 val kodeinVersion = "7.22.0"
 val canardVersion = "1.2.0"
@@ -79,7 +79,7 @@ publishing {
             from(components["java"])
             groupId = "ar.com.intrale"
             artifactId = "backend"
-            version = "0.0.8"
+            version = "0.0.9"
         }
     }
     repositories {
