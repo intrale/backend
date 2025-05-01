@@ -1,4 +1,7 @@
 package ar.com.intrale
 
 open class Config(
-    open val businesses: Set<String>)
+    val businesses: Set<String>,
+    val region: String,
+    val awsCognitoUserPoolId: String,
+    val awsCognitoClientId: String)

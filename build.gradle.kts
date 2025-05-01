@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "ar.com.intrale"
-version = "0.0.9"
+version = "0.0.10"
 
 val kodeinVersion = "7.22.0"
 val canardVersion = "1.2.0"
@@ -71,6 +71,10 @@ dependencies {
 
     // Faker
     implementation("net.datafaker:datafaker:2.4.2")
+
+    //JWT
+    implementation("com.auth0:java-jwt:4.4.0")
+    implementation("com.auth0:jwks-rsa:0.22.0")
 }
 
 publishing {
@@ -79,7 +83,7 @@ publishing {
             from(components["java"])
             groupId = "ar.com.intrale"
             artifactId = "backend"
-            version = "0.0.9"
+            version = "0.0.10"
         }
     }
     repositories {
