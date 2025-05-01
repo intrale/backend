@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
  * Funcion segurizada
  * Previo a la ejecucion valida si el usuario tiene un token valido para ejecutar
  */
-abstract class SecuredFunction(val config: Config, val faker: Faker, val logger: Logger) : Function {
+abstract class SecuredFunction(open val config: Config, open val logger: Logger) : Function {
 
     override suspend fun execute(business: String, function: String, headers: Map<String, String>, textBody: String): Response {
         val token = headers["Authorization"]
