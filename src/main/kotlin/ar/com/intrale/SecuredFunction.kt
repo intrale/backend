@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.DecodedJWT
 import net.datafaker.Faker
 import org.slf4j.Logger
+import java.net.URI
 import java.net.URL
 import java.security.interfaces.RSAPublicKey
 import java.util.concurrent.TimeUnit
@@ -26,7 +27,7 @@ abstract class SecuredFunction(open val config: Config, open val logger: Logger)
         val jwksUrl = "$issuer/.well-known/jwks.json"
 
         try {
-            val provider = JwkProviderBuilder(URL(jwksUrl))
+            val provider = JwkProviderBuilder(URI(jwksUrl).toURL())
                 .cached(10, 24, TimeUnit.HOURS)
                 .build()
 
