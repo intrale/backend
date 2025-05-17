@@ -48,7 +48,14 @@ application {
 }
 
 repositories {
-    maven(url = uri(projectRepo))
+    maven {
+        name = "github"
+        url = uri(projectRepo)
+        credentials {
+            username = System.getenv("GITHUB_ACTOR") ?: project.findProperty("gpr.user") as String?
+            password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key") as String?
+        }
+    }
     mavenCentral()
     gradlePluginPortal()
     maven(url = uri(jetBrainsRepo))
