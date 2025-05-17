@@ -26,7 +26,6 @@ tasks.register("incrementVersion") {
 
 val artifactId = "backend"
 group = "ar.com.intrale"
-//version = "0.1.0"
 
 val projectRepo = "https://maven.pkg.github.com/intrale/repo"
 val jetBrainsRepo = "https://packages.jetbrains.team/maven/p/ktls/maven"
@@ -65,9 +64,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm")
-
     testImplementation(libs.kotlin.test.junit)
-
 
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.rate.limiting)
@@ -114,12 +111,13 @@ publishing {
             name = "github"
             url = uri(projectRepo)
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = System.getenv("GITHUB_ACTOR") ?: project.findProperty("gpr.user") as String?
+                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key") as String?
             }
         }
     }
 }
+
 tasks.named("build") {
     finalizedBy("incrementVersion")
 }
