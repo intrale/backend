@@ -37,17 +37,14 @@ fun start(appModule: DI.Module) {
             }
         }
 
-        /*di {
-            /* bindings */
+        di {
             import(appModule)
-        }*/
+        }
 
         routing {
             post("/{business}/{function}") {
 
-                val di = DI {
-                    import(appModule)
-                }
+                val di = closestDI()
 
                 val businessName = call.parameters["business"]
                 val functionName = call.parameters["function"]
