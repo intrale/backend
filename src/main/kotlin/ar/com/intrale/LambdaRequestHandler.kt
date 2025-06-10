@@ -22,6 +22,11 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
+    private var diContainer: DI? = null
+
+    private fun getDi(appModule: DI.Module): DI =
+        diContainer ?: DI { import(appModule) }.also { diContainer = it }
+
     // The request limit most be assigned on Api Gateway
     /*@OptIn(ExperimentalEncodingApi::class)
     override fun handleRequest(requestEvent: APIGatewayProxyRequestEvent?, context: Context?): APIGatewayProxyResponseEvent  = APIGatewayProxyResponseEvent().apply {
@@ -34,9 +39,7 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
     fun handle(appModule: DI.Module, requestEvent: APIGatewayProxyRequestEvent?, context: Context?): APIGatewayProxyResponseEvent  /*= APIGatewayProxyResponseEvent().apply */{
         try {
 
-            val di = DI {
-                import(appModule)
-            }
+            val di = getDi(appModule)
 
             for ((key, binding) in di.container.tree.bindings) {
                 val tipo = key.type.jvmType.typeName               // Nombre completo del tipo vinculado
