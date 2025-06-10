@@ -45,20 +45,20 @@ abstract class SecuredFunction(open val config: Config, open val logger: Logger)
             val tokenUse = decodedJWT.getClaim("token_use").asString()
             if (tokenUse != "access") {
                 println("Token no es un access_token")
-                return UnauthorizeExeption()
+                return UnauthorizedException()
             }
 
             // ✅ Validación manual del client_id
             val clientIdFromToken = decodedJWT.getClaim("client_id").asString()
             if (clientIdFromToken != config.awsCognitoClientId) {
                 println("ClientId inválido")
-                return UnauthorizeExeption()
+                return UnauthorizedException()
             }
 
             return securedExecute(business, function, headers, textBody) // Token válido
         } catch (e: Exception) {
             println("Token inválido: ${e.message}")
-            return UnauthorizeExeption()
+            return UnauthorizedException()
         }
 
         //TODO: Returning nothing
