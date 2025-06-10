@@ -1,0 +1,43 @@
+package ar.com.intrale
+
+import com.amazonaws.services.lambda.runtime.Context
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import io.ktor.http.HttpStatusCode
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.singleton
+import org.slf4j.LoggerFactory
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class LambdaRequestHandlerTest {
+    private class HelloFunction : Function {
+        override suspend fun execute(business: String, function: String, headers: Map<String, String>, textBody: String): Response {
+            return Response(HttpStatusCode.Created)
+        }
+    }
+
+    private class TestHandler(private val module: DI.Module) : LambdaRequestHandler() {
+        override fun handleRequest(requestEvent: APIGatewayProxyRequestEvent?, context: Context?): com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent {
+            return handle(module, requestEvent, context)
+        }
+    }
+
+    @Test
+    fun executesExistingFunction() {
+        val module = DI.Module(name = "test") {
+            bind<org.slf4j.Logger>() with singleton { LoggerFactory.getLogger("test") }
+            bind<Config>() with singleton { Config(setOf("biz"), "us-east-1", "pool", "client") }
+            bind<Function>(tag = "hello") with singleton { HelloFunction() }
+        }
+        val handler = TestHandler(module)
+        val request = APIGatewayProxyRequestEvent().apply {
+            httpMethod = "POST"
+            pathParameters = mapOf("business" to "biz", "function" to "hello")
+            headers = emptyMap()
+            body = java.util.Base64.getEncoder().encodeToString("".toByteArray())
+        }
+        val response = handler.handle(module, request, null)
+        assertEquals(201, response.statusCode)
+    }
+}
