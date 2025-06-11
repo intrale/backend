@@ -19,7 +19,7 @@ class SecuredFunctionTest {
         val cfg = Config(setOf("biz"), "us-east-1", "pool", "client")
         val func = DummySecuredFunction(cfg)
         val resp = runBlocking { func.execute("biz", "func", emptyMap(), "body") }
-        assertTrue(resp is UnauthorizeExeption)
+        assertTrue(resp is UnauthorizedException)
         assertTrue(!func.called)
     }
 }
