@@ -18,6 +18,7 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 import org.kodein.di.ktor.di
 import org.kodein.type.jvmType
+import ar.com.intrale.HealthResponse
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -40,6 +41,8 @@ fun start(appModule: DI.Module) {
         di {
             import(appModule)
         }
+
+        healthRoute()
 
         routing {
             post("/{business}/{function}") {
@@ -98,6 +101,18 @@ fun start(appModule: DI.Module) {
 
 
     }.start(wait = true)
+}
+
+fun Application.healthRoute() {
+    routing {
+        get("/health") {
+            call.respondText(
+                text = Gson().toJson(HealthResponse()),
+                contentType = ContentType.Application.Json,
+                status = HttpStatusCode.OK
+            )
+        }
+    }
 }
 
 
