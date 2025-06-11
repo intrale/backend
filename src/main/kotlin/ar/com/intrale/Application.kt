@@ -42,6 +42,13 @@ fun start(appModule: DI.Module) {
         }
 
         routing {
+            get("/health") {
+                call.respondText(
+                    text = "OK",
+                    contentType = ContentType.Text.Plain,
+                    status = HttpStatusCode.OK
+                )
+            }
             post("/{business}/{function}") {
 
                 val di = closestDI()

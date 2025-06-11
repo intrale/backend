@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 class UnauthorizeExeptionTest {
     @Test
     fun returnsUnauthorized() {
-        val ex = UnauthorizeExeption()
+        val ex = UnauthorizedException()
         assertEquals(HttpStatusCode.Unauthorized, ex.statusCode)
     }
 }
