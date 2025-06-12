@@ -13,6 +13,7 @@ import org.kodein.di.ktor.closestDI
 import org.kodein.type.jvmType
 import org.slf4j.Logger
 import java.lang.NullPointerException
+import org.slf4j.LoggerFactory
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
@@ -40,16 +41,15 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
         try {
 
             val di = getDi(appModule)
+            val logger: Logger by di.instance()
 
             for ((key, binding) in di.container.tree.bindings) {
                 val tipo = key.type.jvmType.typeName               // Nombre completo del tipo vinculado
                 val tag = key.tag?.toString() ?: "sin tag"
                 val tipoBinding = binding::class.qualifiedName     // Tipo de binding (singleton, provider, etc.)
 
-                println("Tipo registrado: $tipo con tag: $tag -> binding: $tipoBinding")
+                logger.info("Tipo registrado: $tipo con tag: $tag -> binding: $tipoBinding")
             }
-
-            val logger: Logger by di.instance()
 
             if (requestEvent != null) {
                 var httpMehtod = requestEvent.httpMethod
@@ -137,7 +137,7 @@ abstract class LambdaRequestHandler  : RequestHandler<APIGatewayProxyRequestEven
 
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            LoggerFactory.getLogger(javaClass).error("Unhandled exception", e)
             return APIGatewayProxyResponseEvent().apply {
                 statusCode = 500
                 body = "Internal Server Error"
