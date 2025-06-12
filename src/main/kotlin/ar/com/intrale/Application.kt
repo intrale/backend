@@ -20,6 +20,7 @@ import org.kodein.di.ktor.di
 import org.kodein.type.jvmType
 import ar.com.intrale.HealthResponse
 import kotlin.time.Duration.Companion.seconds
+import org.slf4j.Logger
 
 /**
  * Config and initialize
@@ -48,6 +49,7 @@ fun start(appModule: DI.Module) {
             post("/{business}/{function}") {
 
                 val di = closestDI()
+                val logger: Logger by di.instance()
 
                 val businessName = call.parameters["business"]
                 val functionName = call.parameters["function"]
@@ -58,7 +60,7 @@ fun start(appModule: DI.Module) {
                     functionResponse = RequestValidationException("No business defined on path")
                 } else {
                     val config = di.direct.instance<Config>()
-                    System.out.println("config.businesses:" + config.businesses)
+                    logger.info("config.businesses: ${config.businesses}")
                     if (!config.businesses.contains(businessName)){
                         functionResponse = ExceptionResponse("Business not avaiable with name $businessName")
                     } else {
@@ -67,8 +69,8 @@ fun start(appModule: DI.Module) {
                         } else {
                             try {
                                 val allFunctions = di.direct.allInstances<Function>()
-                                println(">>> Registered functions count: ${allFunctions.size}")
-                                println("Injecting Function $functionName.")
+                                logger.info(">>> Registered functions count: ${allFunctions.size}")
+                                logger.info("Injecting Function $functionName.")
                                 val function = di.direct.instance<Function>(tag = functionName)
                                 val headers: Map<String, String> = call.request.headers.entries().associate {
                                     it.key to it.value.joinToString(",")
