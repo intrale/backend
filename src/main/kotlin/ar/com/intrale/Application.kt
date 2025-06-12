@@ -44,6 +44,7 @@ fun start(appModule: DI.Module) {
         }
 
         healthRoute()
+        swaggerRoute()
 
         routing {
             post("/{business}/{function}") {
