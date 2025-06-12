@@ -14,6 +14,9 @@ Para descargar las dependencias y compilar el proyecto ejecute:
 ./gradlew build
 ```
 
+Al finalizar la tarea `build` se ejecutará automáticamente `incrementVersion`,
+la cual aumenta en uno el número de **patch** definido en `version.properties`.
+
 ## Ejecutar el servicio
 Puede iniciar la aplicación localmente con:
 
