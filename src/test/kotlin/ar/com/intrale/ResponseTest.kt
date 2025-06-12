@@ -10,4 +10,10 @@ class ResponseTest {
         val resp = Response()
         assertEquals(HttpStatusCode.OK, resp.statusCode)
     }
+
+    @Test
+    fun customStatusIsRespected() {
+        val resp = Response(HttpStatusCode.BadRequest)
+        assertEquals(HttpStatusCode.BadRequest, resp.statusCode)
+    }
 }
