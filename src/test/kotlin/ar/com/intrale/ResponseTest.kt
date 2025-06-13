@@ -16,4 +16,10 @@ class ResponseTest {
         val resp = Response(HttpStatusCode.BadRequest)
         assertEquals(HttpStatusCode.BadRequest, resp.statusCode)
     }
+
+    @Test
+    fun nullStatusIsAccepted() {
+        val resp = Response(null)
+        assertEquals(null, resp.statusCode)
+    }
 }
