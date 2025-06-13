@@ -72,6 +72,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm")
+    testImplementation(libs.ktor.client.cio)
     testImplementation(libs.kotlin.test.junit)
 
     implementation(libs.logback.classic)
