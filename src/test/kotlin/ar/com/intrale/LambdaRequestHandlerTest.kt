@@ -57,4 +57,71 @@ class LambdaRequestHandlerTest {
         val response = handler.handle(module, request, null)
         assertEquals(500, response.statusCode)
     }
+
+    @Test
+    fun optionsReturnsOk() {
+        val module = DI.Module(name = "test") {
+            bind<org.slf4j.Logger>() with singleton { LoggerFactory.getLogger("test") }
+        }
+        val handler = TestHandler(module)
+        val request = APIGatewayProxyRequestEvent().apply {
+            httpMethod = "OPTIONS"
+        }
+        val response = handler.handle(module, request, null)
+        assertEquals(200, response.statusCode)
+    }
+
+    @Test
+    fun unknownBusinessReturnsError() {
+        val module = DI.Module(name = "test") {
+            bind<org.slf4j.Logger>() with singleton { LoggerFactory.getLogger("test") }
+            bind<Config>() with singleton { Config(setOf("biz"), "us-east-1", "pool", "client") }
+            bind<Function>(tag = "hello") with singleton { HelloFunction() }
+        }
+        val handler = TestHandler(module)
+        val request = APIGatewayProxyRequestEvent().apply {
+            httpMethod = "POST"
+            pathParameters = mapOf("business" to "other", "function" to "hello")
+            headers = emptyMap()
+            body = java.util.Base64.getEncoder().encodeToString("{}".toByteArray())
+        }
+        val response = handler.handle(module, request, null)
+        assertEquals(500, response.statusCode)
+    }
+
+    @Test
+    fun missingBusinessReturnsError() {
+        val module = DI.Module(name = "test") {
+            bind<org.slf4j.Logger>() with singleton { LoggerFactory.getLogger("test") }
+            bind<Config>() with singleton { Config(setOf("biz"), "us-east-1", "pool", "client") }
+            bind<Function>(tag = "hello") with singleton { HelloFunction() }
+        }
+        val handler = TestHandler(module)
+        val request = APIGatewayProxyRequestEvent().apply {
+            httpMethod = "POST"
+            pathParameters = mapOf("function" to "hello")
+            headers = emptyMap()
+            body = java.util.Base64.getEncoder().encodeToString("{}".toByteArray())
+        }
+        val response = handler.handle(module, request, null)
+        assertEquals(400, response.statusCode)
+    }
+
+    @Test
+    fun nullBodyReturnsValidationError() {
+        val module = DI.Module(name = "test") {
+            bind<org.slf4j.Logger>() with singleton { LoggerFactory.getLogger("test") }
+            bind<Config>() with singleton { Config(setOf("biz"), "us-east-1", "pool", "client") }
+            bind<Function>(tag = "hello") with singleton { HelloFunction() }
+        }
+        val handler = TestHandler(module)
+        val request = APIGatewayProxyRequestEvent().apply {
+            httpMethod = "POST"
+            pathParameters = mapOf("business" to "biz", "function" to "hello")
+            headers = emptyMap()
+            body = null
+        }
+        val response = handler.handle(module, request, null)
+        assertEquals(500, response.statusCode)
+    }
 }
