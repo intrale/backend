@@ -71,7 +71,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-gson-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
 
-    testImplementation("io.ktor:ktor-server-test-host-jvm")
+    testImplementation("io.ktor:ktor-server-test-host:2.3.12")
     testImplementation(libs.ktor.client.cio)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.mockk)
