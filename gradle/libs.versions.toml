@@ -1,6 +1,6 @@
 [versions]
 # Kotlin
-kotlin = "1.9.24"
+kotlin = "1.9.22"
 
 # Coroutines
 kotlinx-coroutines = "1.7.3"
